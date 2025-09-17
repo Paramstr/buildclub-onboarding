@@ -194,6 +194,9 @@ export async function POST(request: NextRequest) {
     try {
       console.log("[v0] About to call Groq API with model:", process.env.GROQ_MODEL || "llama-3.1-70b-versatile")
       console.log("[v0] Groq API Key length:", process.env.GROQ_API_KEY?.length || 0)
+      console.log("[v0] API Key first 10 chars:", process.env.GROQ_API_KEY?.substring(0, 10))
+      console.log("[v0] API Key last 10 chars:", process.env.GROQ_API_KEY?.substring(-10))
+      console.log("[v0] API Key charCodes at end:", process.env.GROQ_API_KEY?.slice(-5).split('').map(c => c.charCodeAt(0)))
       
       completion = await groq.chat.completions.create({
         model: process.env.GROQ_MODEL || "llama-3.1-70b-versatile",
