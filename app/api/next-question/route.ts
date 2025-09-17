@@ -4,6 +4,7 @@ import { AiResponseSchema, type AiRequest, type AiResponse } from "@/lib/types"
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
+  timeout: 30000, // 30 seconds timeout
 })
 
 const SYSTEM_PROMPT = `You are BuildClub's intelligent onboarding assistant. Your goal is to create a personalized, progress-oriented experience that efficiently maps the user's work profile.
@@ -191,6 +192,9 @@ export async function POST(request: NextRequest) {
 
     let completion
     try {
+      console.log("[v0] About to call Groq API with model:", process.env.GROQ_MODEL || "llama-3.1-70b-versatile")
+      console.log("[v0] Groq API Key length:", process.env.GROQ_API_KEY?.length || 0)
+      
       completion = await groq.chat.completions.create({
         model: process.env.GROQ_MODEL || "llama-3.1-70b-versatile",
         messages: [
@@ -275,7 +279,11 @@ Use this exact format:
         status: groqError.status,
         code: groqError.code,
         type: groqError.type,
+        name: groqError.name,
+        stack: groqError.stack,
+        cause: groqError.cause,
       })
+      console.error("[v0] Full error object:", groqError)
 
       if (groqError.status === 401) {
         return NextResponse.json({ error: "Invalid Groq API key" }, { status: 500 })
